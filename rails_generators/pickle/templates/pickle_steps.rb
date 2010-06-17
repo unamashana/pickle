@@ -94,7 +94,13 @@ Then(/^#{capture_model}'s (\w+) (should(?: not)?) be #{capture_value}$/) do |nam
   end
 end
 
+
 # assert size of association
 Then /^#{capture_model} should have (\d+) (\w+)$/ do |name, size, association|
-  model!(name).send(association).size.should == size.to_i
+  # Check if there is a counter cache
+  if(model!(name).respond_to?("#{association}_count"))
+    model!(name).send("#{association}_count").should == size.to_i
+  else
+    model!(name).send(association).size.should == size.to_i
+  end
 end
